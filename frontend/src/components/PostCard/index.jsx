@@ -1,6 +1,8 @@
 import { MessageSquare } from 'lucide-react';
 
 const PostCard = ({ post }) => {
+  const postDate = new Date(post.created_utc * 1000).toLocaleString(); // Convert timestamp to date string
+
   return (
     <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-lg transform scale-100 mx-auto sm:mx-0 hover:shadow-xl hover:scale-105 transition-transform duration-300 flex flex-col">
       <a href="#">
@@ -8,7 +10,7 @@ const PostCard = ({ post }) => {
           {post.title}
         </h6>
       </a>
-      {/* Add flex-grow to push comments and read more to the bottom */}
+      <p className="text-gray-400 text-sm">{postDate}</p> {/* Add this line */}
       <div className="flex-grow"></div>
       <div className="flex justify-between items-center justify-end mt-auto">
         <div className="m-2.5 text-white flex items-center">

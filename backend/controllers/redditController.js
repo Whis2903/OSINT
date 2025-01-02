@@ -27,8 +27,12 @@ const fetchPostsByKeyword = async (req, res) => {
         content: submission.selftext || 'No text content',
         post_type: submission.is_self ? 'Self-post' : 'Link or Media',
         comments_count: submission.num_comments,
+        created_utc: submission.created_utc,
       });
     });
+
+    // Sort posts by created_utc in descending order
+    posts.sort((a, b) => b.created_utc - a.created_utc);
 
     res.json(posts);
   } catch (error) {
