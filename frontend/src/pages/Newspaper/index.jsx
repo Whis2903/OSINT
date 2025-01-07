@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-const Newspaper = () => {
+const NewsPaper = () => {
   const [imageId, setImageId] = useState(null);
   const [imagesByNewspaper, setImagesByNewspaper] = useState({});
   const [previousImagesByNewspaper, setPreviousImagesByNewspaper] = useState({});
@@ -167,4 +167,4 @@ const Newspaper = () => {
   );
 };
 
-export default Newspaper;
+export default NewsPaper;

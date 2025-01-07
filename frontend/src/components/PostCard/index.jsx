@@ -56,7 +56,7 @@ const PostCard = ({ post }) => {
   return (
     <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-lg transform scale-100 mx-auto sm:mx-0 hover:shadow-xl hover:scale-105 transition-transform duration-300 flex flex-col relative">
       <a href={getTranslatedUrl(post.url)} target="_blank" rel="noopener noreferrer">
-        <h6 className="mb-2 text-md sm:text-md md:text-md font-semibold tracking-tight text-white">
+        <h6 className="hover:underline mb-2 text-md sm:text-md md:text-md font-semibold tracking-tight text-white">
           {translatedTitle}
         </h6>
       </a>

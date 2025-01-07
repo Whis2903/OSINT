@@ -5,9 +5,9 @@ const ResultComponent = ({ posts, videos, searchResults, news }) => {
   return (
     <div className="flex justify-center items-start">
       {/* Card with fixed height and scrollable content */}
-      <div className="w-[80%] h-[63vh] mt-6 bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 scrollbar-custom">
+      <div className="w-[80%] md:h-[55vh] lg:h-[55vh] xl:h-[65vh] mt-3 bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 scrollbar-custom">
         {/* Content inside the scrollable card */}
-        <h2 className="text-white text-center text-2xl font-semibold mb-4">
+        <h2 className="hover:underline text-white text-center text-2xl font-semibold mb-4">
           Results
         </h2>
         {posts.length > 0 || videos.length > 0 || searchResults.length > 0 || news.length > 0 ? (

@@ -8,6 +8,9 @@ import profile from '../../assets/img_avatar.png';
 export const SidebarContext = createContext({ expanded: false });
 
 const Sidebar = ({ children, expanded, setExpanded }) => {
+
+
+
   return (
     <aside className={`fixed top-0 left-0 h-full transition-all duration-300 ${expanded ? 'w-64' : 'w-20'} bg-gray-900`}>
       <nav className="h-full flex flex-col bg-gray-900 border-r border-gray-700 shadow-lg">
@@ -47,10 +50,10 @@ Sidebar.propTypes = {
 
 export default Sidebar;
 
-export const SidebarItem = ({ icon, text, active, alert }) => {
+export const SidebarItem = ({ icon, text, active, alert, clickHandler }) => {
   const { expanded } = useContext(SidebarContext);
   return (
-    <li className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active ? 'bg-gradient-to-tr from-indigo-600 to-indigo-500 text-indigo-100' : 'hover:bg-indigo-700 text-gray-300'}`}>
+    <li onClick={clickHandler} className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active ? 'bg-gradient-to-tr from-indigo-600 to-indigo-500 text-indigo-100' : 'hover:bg-indigo-700 text-gray-300'}`}>
       <Link to={`/${text.toLowerCase()}`} className="flex items-center w-full">
         {icon}
         <span className={`overflow-hidden transition-all ${expanded ? 'w-52 ml-3' : 'w-0'}`}>{text}</span>
