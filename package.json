@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "node-tdlib": "^0.0.0",
-    "tdl": "^8.0.2"
-  }
-}

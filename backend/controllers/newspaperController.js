@@ -1,13 +1,8 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { format, subDays } = require('date-fns');
-const { MongoClient, ObjectId } = require('mongodb');
-
-// MongoDB connection URI
-const uri = 'mongodb://localhost:27017';
-const client = new MongoClient(uri);
-const dbName = 'newspaperDB';
-const collectionName = 'newspaperImages';
+const { ObjectId } = require('mongodb');
+const connectToDatabase = require('../db');
 
 // List of base URLs for newspapers
 const baseUrls = [
@@ -22,7 +17,12 @@ const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
   'Accept-Language': 'en-US,en;q=0.9',
   'Accept-Encoding': 'gzip, deflate, br',
-  'Connection': 'keep-alive'
+  'Connection': 'keep-alive',
+  'Referer': 'https://www.google.com/',
+  'Cache-Control': 'max-age=0',
+  'Upgrade-Insecure-Requests': '1',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'DNT': '1'
 };
 
 // Function to get the current date in DD-MM-YYYY format
@@ -71,9 +71,8 @@ const scrapeImages = async (baseUrl, date) => {
 
 // Function to store images in MongoDB
 const storeImagesInMongoDB = async (imagesByNewspaper, date) => {
-  await client.connect();
-  const db = client.db(dbName);
-  const collection = db.collection(collectionName);
+  const db = await connectToDatabase();
+  const collection = db.collection('Images');
 
   const result = await collection.insertOne({ imagesByNewspaper, date });
 
@@ -86,17 +85,34 @@ const getNewspaperImages = async (req, res) => {
   const currentDate = getCurrentDate();
   const imagesByNewspaper = {};
 
-  for (const baseUrl of baseUrls) {
-    console.log(`Processing website: ${baseUrl}`);
-    const imageUrls = await scrapeImages(baseUrl, currentDate);
-    imagesByNewspaper[baseUrl] = imageUrls;
-  }
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection('Images');
 
-  if (Object.keys(imagesByNewspaper).length > 0) {
-    const imageId = await storeImagesInMongoDB(imagesByNewspaper, currentDate);
-    res.json({ imageId });
-  } else {
-    res.status(404).json({ message: 'No images found' });
+    // Check if data for the current date already exists
+    const existingDoc = await collection.findOne({ date: currentDate });
+
+    if (existingDoc) {
+      console.log(`Data for ${currentDate} already exists. Returning existing data.`);
+      return res.json({ imageId: existingDoc._id });
+    }
+
+    // If data does not exist, perform scraping
+    for (const baseUrl of baseUrls) {
+      console.log(`Processing website: ${baseUrl}`);
+      const imageUrls = await scrapeImages(baseUrl, currentDate);
+      imagesByNewspaper[baseUrl] = imageUrls;
+    }
+
+    if (Object.keys(imagesByNewspaper).length > 0) {
+      const imageId = await storeImagesInMongoDB(imagesByNewspaper, currentDate);
+      res.json({ imageId });
+    } else {
+      res.status(404).json({ message: 'No images found' });
+    }
+  } catch (error) {
+    console.error('Error getting newspaper images:', error);
+    res.status(500).json({ message: 'An error occurred while getting newspaper images' });
   }
 };
 
@@ -104,44 +120,56 @@ const getNewspaperImages = async (req, res) => {
 const getPreviousNewspaperImages = async (req, res) => {
   const { date } = req.params;
 
-  await client.connect();
-  const db = client.db(dbName);
-  const collection = db.collection(collectionName);
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection('Images');
 
-  const imageDoc = await collection.findOne({ date });
+    const imageDoc = await collection.findOne({ date });
 
-  if (imageDoc) {
-    res.json(imageDoc.imagesByNewspaper);
-  } else {
-    res.status(404).json({ message: 'Images not found' });
+    if (imageDoc) {
+      res.json(imageDoc.imagesByNewspaper);
+    } else {
+      res.status(404).json({ message: 'Images not found' });
+    }
+  } catch (error) {
+    console.error('Error getting previous newspaper images:', error);
+    res.status(500).json({ message: 'An error occurred while getting previous newspaper images' });
   }
 };
 
 // Controller function to get available dates from MongoDB
 const getAvailableDates = async (req, res) => {
-  await client.connect();
-  const db = client.db(dbName);
-  const collection = db.collection(collectionName);
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection('Images');
 
-  const dates = await collection.distinct('date');
+    const dates = await collection.distinct('date');
 
-  res.json(dates);
+    res.json(dates);
+  } catch (error) {
+    console.error('Error getting available dates:', error);
+    res.status(500).json({ message: 'An error occurred while getting available dates' });
+  }
 };
 
 // Controller function to get images from MongoDB
 const getImages = async (req, res) => {
   const { id } = req.params;
 
-  await client.connect();
-  const db = client.db(dbName);
-  const collection = db.collection(collectionName);
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection('Images');
 
-  const imageDoc = await collection.findOne({ _id: new ObjectId(id) });
+    const imageDoc = await collection.findOne({ _id: new ObjectId(id) });
 
-  if (imageDoc) {
-    res.json(imageDoc.imagesByNewspaper);
-  } else {
-    res.status(404).json({ message: 'Images not found' });
+    if (imageDoc) {
+      res.json(imageDoc.imagesByNewspaper);
+    } else {
+      res.status(404).json({ message: 'Images not found' });
+    }
+  } catch (error) {
+    console.error('Error getting images:', error);
+    res.status(500).json({ message: 'An error occurred while getting images' });
   }
 };
 

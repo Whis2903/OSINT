@@ -1,0 +1,12 @@
+.image-item {
+    position: relative;
+  }
+  
+  .image-item img {
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .image-item img:hover {
+    transform: scale(1.05);
+  }
