@@ -17,45 +17,79 @@ const Homepage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [news, setNews] = useState([]);
   const [activeFilterButton, setActiveFilterButton] = useState("All");
+  const [isNsfwFilterEnabled, setIsNsfwFilterEnabled] = useState(false);
 
   const [visiblePosts, setVisiblePosts] = useState([]);
   const [visibleVideos, setVisibleVideos] = useState([]);
   const [visibleSearchResults, setVisibleSearchResults] = useState([]);
   const [visibleNews, setVisibleNews] = useState([]);
 
+  const nsfwWords = [
+    "penis", "vagina", "breasts", "ass", "tits", "dick", "pussy", "clit",
+    "sex", "fuck", "intercourse", "blowjob", "handjob", "cum", "ejaculate", 
+    "orgasm", "piss", "shit", "fart", "vomit", "lingerie", "fetish", 
+    "bondage", "bdsm", "nude", "porn", "erotic", "masturbate", "nipple", 
+    "crotch", "genitals", "anus", "stripper", "prostitute", "hooker", 
+    "slut", "whore", "horny", "seduce", "penetration", "kinky", "erotica", 
+    "lapdance", "lust", "orgy", "squirting", "spank", "threesome", "voyeur", 
+    "hentai", "incest", "bestiality", "necrophilia", "peeping", "rape", 
+    "molest", "pedophile", "semen", "twerk", "thong", "booty", "dildo", 
+    "vibrator", "buttplug", "kamasutra", "taboo", "dominatrix", "escort", 
+    "xxx", "adult", "scat", "cumshot", "deepthroat", "gangbang", "lesbian", 
+    "gay", "bisexual", "transsexual", "orgasmic", "rimming", "rimjob", 
+    "submission", "dominance", "fluffer", "felch", "snowballing", "cumplay", 
+    "wetdream", "handy", "milking", "jerkoff", "bdsm", "bondage", "discipline", 
+    "sadism", "masochism", "roleplay", "dirtytalk", "facial", "gagging", 
+    "fisting", "golden shower", "cuckold", "swingers", "polyamory", 
+    "softcore", "hardcore", "bareback", "bukkake", "creampie", "cumslut", 
+    "cumdumpster", "docking", "double penetration", "enema", "exhibitionism", 
+    "felching", "foot fetish", "gloryhole", "gokkun", "group sex", "jailbait", 
+    "kink", "money shot", "pegging", "queef", "rimjob", "sex toy", "strap-on", 
+    "swinging", "teabagging", "titfuck", "twink", "voyeurism", "watersports", 
+    "yiff", "zoophilia"
+  ] 
+
+  const filterNsfwContent = (content) => {
+    if (!isNsfwFilterEnabled) return content;
+    return content.filter(item => {
+      const text = item.title || item.description || item.content || "";
+      return !nsfwWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
+    });
+  };
+
   useEffect(() => {
     switch (activeFilterButton) {
       case API.REDDIT:
-        setVisiblePosts(posts);
+        setVisiblePosts(filterNsfwContent(posts));
         setVisibleVideos([]);
         setVisibleSearchResults([]);
         setVisibleNews([]);
         break;
       case API.YOUTUBE:
         setVisiblePosts([]);
-        setVisibleVideos(videos);
+        setVisibleVideos(filterNsfwContent(videos));
         setVisibleSearchResults([]);
         setVisibleNews([]);
         break;
       case API.GOOGLE:
         setVisiblePosts([]);
         setVisibleVideos([]);
-        setVisibleSearchResults(searchResults);
+        setVisibleSearchResults(filterNsfwContent(searchResults));
         setVisibleNews([]);
         break;
       case API.NEWS:
         setVisiblePosts([]);
         setVisibleVideos([]);
         setVisibleSearchResults([]);
-        setVisibleNews(news);
+        setVisibleNews(filterNsfwContent(news));
         break;
       default:
-        setVisiblePosts(posts);
-        setVisibleVideos(videos);
-        setVisibleSearchResults(searchResults);
-        setVisibleNews(news);
+        setVisiblePosts(filterNsfwContent(posts));
+        setVisibleVideos(filterNsfwContent(videos));
+        setVisibleSearchResults(filterNsfwContent(searchResults));
+        setVisibleNews(filterNsfwContent(news));
     }
-  }, [activeFilterButton, posts, videos, searchResults, news]);
+  }, [activeFilterButton, posts, videos, searchResults, news, isNsfwFilterEnabled]);
 
   const fetchData = async (keywords) => {
     if (!keywords.length) {
@@ -149,6 +183,13 @@ const Homepage = () => {
                 />
               </div>
             ))}
+<button
+  className={`filter-toggle px-4 py-2 rounded-lg font-semibold text-white 
+    ${isNsfwFilterEnabled ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"}`}
+  onClick={() => setIsNsfwFilterEnabled(!isNsfwFilterEnabled)}
+>
+  {isNsfwFilterEnabled ? "Disable" : "Enable"} NSFW Filter
+</button>
           </div>
           <div className="result-div">
             <ResultComponent

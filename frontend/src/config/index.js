@@ -12,10 +12,10 @@ export const sidebarItemList = [
         text : "Newspaper",
         icon : React.createElement(Newspaper)
     },
-    {
-        text : "Dashboard",
-        icon : React.createElement(LayoutDashboard)
-    }
+    // {
+    //     text : "Dashboard",
+    //     icon : React.createElement(LayoutDashboard)
+    // }
 ]
 
 

@@ -25,7 +25,7 @@ const Sidebar = ({ children, expanded, setExpanded }) => {
           <ul className="flex-1 px-3 text-white">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="border-t border-gray-700 flex p-3">
+        {/* <div className="border-t border-gray-700 flex p-3">
           <Link to="/profile">
             <img style={{ borderRadius: '50%' }} src={profile} className="w-10 h-10 rounded-md" />
           </Link>
@@ -36,7 +36,7 @@ const Sidebar = ({ children, expanded, setExpanded }) => {
             </div>
             <MoreVertical size={20} className="text-gray-400" />
           </div>
-        </div>
+        </div> */}
       </nav>
     </aside>
   );

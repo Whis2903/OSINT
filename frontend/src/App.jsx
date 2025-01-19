@@ -55,7 +55,7 @@ function App() {
         })}
 
         <hr className="my-3" />
-        <SidebarItem
+        {/* <SidebarItem
           icon={<Settings size={20} />}
           text="Settings"
           active={activeItem === "Settings"}
@@ -63,7 +63,7 @@ function App() {
             setActiveItem("Settings");
             navigate("/settings");
           }}
-        />
+        /> */}
       </Sidebar>
 
       <div
