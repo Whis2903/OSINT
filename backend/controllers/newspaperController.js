@@ -93,7 +93,30 @@ const getNewspaperImages = async (req, res) => {
     const existingDoc = await collection.findOne({ date: currentDate });
 
     if (existingDoc) {
-      console.log(`Data for ${currentDate} already exists. Returning existing data.`);
+      console.log(`Data for ${currentDate} already exists. Checking for empty arrays.`);
+
+      let needsUpdate = false;
+
+      // Check if any newspaper image array is empty
+      for (const baseUrl of baseUrls) {
+        if (!existingDoc.imagesByNewspaper[baseUrl] || existingDoc.imagesByNewspaper[baseUrl].length === 0) {
+          console.log(`No images found for ${baseUrl}. Rescraping...`);
+          const imageUrls = await scrapeImages(baseUrl, currentDate);
+          imagesByNewspaper[baseUrl] = imageUrls;
+          needsUpdate = true;
+        } else {
+          imagesByNewspaper[baseUrl] = existingDoc.imagesByNewspaper[baseUrl];
+        }
+      }
+
+      if (needsUpdate) {
+        await collection.updateOne(
+          { date: currentDate },
+          { $set: { imagesByNewspaper } }
+        );
+        console.log(`Updated data for ${currentDate}.`);
+      }
+
       return res.json({ imageId: existingDoc._id });
     }
 

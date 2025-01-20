@@ -42,3 +42,9 @@ export const buttonList = [
     },
 
 ]
+
+export const url = {
+backend : 'http://localhost:5000',
+
+}
+    

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ChevronDown, ChevronUp } from 'lucide-react'; // Import the icons
 import TabButton from '../../components/TabButton';
 import NewspaperList from '../../components/NewspaperList';
+import {url} from '../../config'
 
 const Newspaper = () => {
   const [imageId, setImageId] = useState(null);
@@ -16,7 +17,7 @@ const Newspaper = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/newspaper/images');
+        const response = await axios.get(`${url.backend}/api/newspaper/images`);
         console.log('Fetched image ID:', response.data.imageId);
         if (response.data.imageId) {
           setImageId(response.data.imageId);
@@ -36,7 +37,7 @@ const Newspaper = () => {
     if (imageId) {
       const fetchImagesById = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/newspaper/images/${imageId}`);
+          const response = await axios.get(`${url.backend}/api/newspaper/images/${imageId}`);
           console.log('Fetched images by ID:', response.data);
           setImagesByNewspaper(response.data);
         } catch (error) {
@@ -53,7 +54,7 @@ const Newspaper = () => {
   useEffect(() => {
     const fetchAvailableDates = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/newspaper/available-dates');
+        const response = await axios.get(`${url.backend}/api/newspaper/available-dates`);
         console.log('Fetched available dates:', response.data);
         setAvailableDates(response.data);
       } catch (error) {
@@ -66,7 +67,7 @@ const Newspaper = () => {
 
   const fetchPreviousImagesByDate = async (date) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/newspaper/previous-images/${date}`);
+      const response = await axios.get(`${url.backend}/api/newspaper/previous-images/${date}`);
       console.log(`Fetched images for date ${date}:`, response.data);
       setPreviousImagesByNewspaper((prev) => ({
         ...prev,

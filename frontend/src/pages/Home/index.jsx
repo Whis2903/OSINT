@@ -3,7 +3,7 @@ import SearchCard from "../../components/SearchCard";
 import ResultComponent from "../../components/ResultComponent";
 import FilterButton from "../../components/FilterButton";
 import { buttonList } from "../../config";
-
+import {url} from '../../config'
 const API = {
   REDDIT: "Reddit",
   YOUTUBE: "Youtube",
@@ -101,10 +101,10 @@ const Homepage = () => {
       const queryString = keywords
         .map((keyword) => `keywords[]=${encodeURIComponent(keyword)}`)
         .join("&");
-      const redditUrl = `http://localhost:5000/api/reddit/posts?${queryString}`;
-      const youtubeUrl = `http://localhost:5000/api/youtube/videos?${queryString}`;
-      const googleSearchUrl = `http://localhost:5000/api/google/search?${queryString}`;
-      const newsUrl = `http://localhost:5000/api/news/search?${queryString}`;
+      const redditUrl = `${url.backend}/api/reddit/posts?${queryString}`;
+      const youtubeUrl = `${url.backend}/api/youtube/videos?${queryString}`;
+      const googleSearchUrl = `${url.backend}/api/google/search?${queryString}`;
+      const newsUrl = `${url.backend}/api/news/search?${queryString}`;
 
       const [
         redditResponse,
