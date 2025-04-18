@@ -27,7 +27,7 @@ export async function analyzeSentiment(text: string): Promise<Sentiment> {
   try {
     checkRateLimit()
 
-    const apiKey = process.env.HUGGINGFACE_API_KEY || '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'
+    const apiKey = process.env.HUGGINGFACE_API_KEY
     
     // Use a more accurate sentiment analysis model
     const response = await fetch(
