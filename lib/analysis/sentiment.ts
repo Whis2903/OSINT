@@ -27,7 +27,11 @@ export async function analyzeSentiment(text: string): Promise<Sentiment> {
   try {
     checkRateLimit()
 
+    // Ensure the API key is retrieved securely from environment variables
     const apiKey = process.env.HUGGINGFACE_API_KEY
+    if (!apiKey) {
+      throw new Error("HuggingFace API key is not set in environment variables.")
+    }
     
     // Use a more accurate sentiment analysis model
     const response = await fetch(
