@@ -31,7 +31,7 @@ export async function analyzeCredibility(text: string): Promise<Credibility> {
     try {
       checkRateLimit()
 
-      const apiKey = process.env.HUGGINGFACE_API_KEY || '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'
+      const apiKey = process.env.HUGGINGFACE_API_KEY 
 
       // Use a more accurate model for credibility analysis
       const response = await fetch(
