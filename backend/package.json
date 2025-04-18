@@ -1,0 +1,35 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "@google-cloud/translate": "^8.5.0",
+    "@vitalets/google-translate-api": "^9.2.0",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "chromedriver": "^131.0.4",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "googleapis": "^144.0.0",
+    "gridfs-stream": "^1.1.1",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.9.3",
+    "node-tdlib": "^0.0.0",
+    "pdfkit": "^0.16.0",
+    "selenium-webdriver": "^4.27.0",
+    "snoowrap": "^1.23.0",
+    "tdl": "^8.0.2",
+    "tdlib": "^0.0.0-alpha.0",
+    "torch": "^0.2.7"
+  }
+}
