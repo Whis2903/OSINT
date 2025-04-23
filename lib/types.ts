@@ -1,4 +1,4 @@
-export type NewsSource = "google" | "reddit" | "youtube"
+export type NewsSource = "google" | "reddit" | "youtube" | "newspaper"
 export type Sentiment = "positive" | "neutral" | "negative"
 export type Credibility = "high" | "medium" | "low"
 
@@ -7,6 +7,10 @@ export interface Keyword {
   text: string
   createdAt: string
   lastUpdated: string
+  isNewsChannel?: boolean
+  country?: string
+  language?: string
+  category?: string
 }
 
 export interface NewsItem {
@@ -21,6 +25,8 @@ export interface NewsItem {
   rawContent?: string
   thumbnail?: string | null
   keywordId?: string
+  newspaper?: string
+  category?: string
 }
 
 export interface GoogleNewsItem {
@@ -83,4 +89,14 @@ export interface KeywordResults {
   keyword: Keyword
   results: NewsItem[]
   lastUpdated: string
+}
+
+export interface Newspaper {
+  id: string
+  name: string
+  url: string
+  country: string
+  language: string
+  logo?: string
+  category: string
 }

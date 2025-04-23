@@ -1,10 +1,46 @@
 import type { Sentiment, SentimentAnalysisResult } from "../types"
 
+// List of negative words that should strongly influence sentiment analysis
+const NEGATIVE_KEYWORDS = [
+  "killed",
+  "murder",
+  "terrorism",
+  "terrorist",
+  "attack",
+  "dead",
+  "death",
+  "shooting",
+  "explosion",
+  "bomb",
+  "violence",
+  "violent",
+  "war",
+  "casualties",
+  "fatal",
+  "tragedy",
+  "kidnap",
+  "kidnapped",
+  "kidnapping",
+  "hostage",
+  "suicide",
+  "crime",
+  "criminal",
+]
+
 export async function analyzeSentiment(text: string): Promise<Sentiment> {
   try {
     const apiKey = process.env.HUGGINGFACE_API_KEY
     if (!apiKey) {
       throw new Error("HuggingFace API key is not configured")
+    }
+
+    // Check for negative keywords in the text before sending to API
+    const textLower = text.toLowerCase()
+    for (const keyword of NEGATIVE_KEYWORDS) {
+      if (textLower.includes(keyword)) {
+        // If the text contains strong negative keywords, directly return negative sentiment
+        return "negative"
+      }
     }
 
     // Use HuggingFace's sentiment analysis model

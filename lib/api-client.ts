@@ -1,8 +1,5 @@
 // API client with better error handling, retries, and caching
 import { cache } from "react";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 interface FetchOptions extends RequestInit {
   retries?: number;
@@ -57,18 +54,12 @@ async function fetchWithRetry(url: string, options: FetchOptions = {}): Promise<
   throw new Error("Unexpected error in fetch retry logic");
 }
 
-const REDDIT_CLIENT_ID = process.env.REDDIT_CLIENT_ID!;
-const REDDIT_CLIENT_SECRET = process.env.REDDIT_CLIENT_SECRET!;
-const REDDIT_REFRESH_TOKEN = process.env.REDDIT_REFRESH_TOKEN!;
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY!;
-const GOOGLE_CUSTOM_SEARCH_API_KEY = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY!;
-const GOOGLE_CUSTOM_SEARCH_ENGINE_ID = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID!;
-const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY!;
-
 export const apiClient = {
   get: cache(async <T>(url: string, options: FetchOptions = {}): Promise<T> => {
     const response = await fetchWithRetry(url, {
       ...options,
+      method: "GET",
+      next: { revalidate: options.cacheTime || 3600 },
     });
     return response.json();
   }),
@@ -91,35 +82,46 @@ export const apiClient = {
     const url = `https://www.reddit.com/${endpoint}`;
     const response = await fetchWithRetry(url, {
       headers: {
-        Authorization: `Bearer ${REDDIT_REFRESH_TOKEN}`,
-        "Client-ID": REDDIT_CLIENT_ID,
-        "Client-Secret": REDDIT_CLIENT_SECRET,
+        "User-Agent": "OSINT News Analyzer/1.0",
       },
     });
     return response.json();
   },
 
   searchYouTube: async (query: string) => {
-    const url = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&q=${query}`;
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    if (!apiKey) throw new Error("YouTube API key is not configured");
+
+    const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&q=${query}&part=snippet&maxResults=10&type=video`;
     const response = await fetchWithRetry(url);
     return response.json();
   },
 
   searchGoogle: async (query: string) => {
-    const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${GOOGLE_CUSTOM_SEARCH_ENGINE_ID}&q=${query}`;
+    const apiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+    const searchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
+
+    if (!apiKey || !searchEngineId) {
+      throw new Error("Google API key or Search Engine ID is not configured");
+    }
+
+    const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${query}`;
     const response = await fetchWithRetry(url);
     return response.json();
   },
 
   analyzeText: async (text: string) => {
-    const url = `https://api-inference.huggingface.co/models`;
+    const apiKey = process.env.HUGGINGFACE_API_KEY;
+    if (!apiKey) throw new Error("HuggingFace API key is not configured");
+
+    const url = `https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english`;
     const response = await fetchWithRetry(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs: text }),
+      body: JSON.stringify({ inputs: text.substring(0, 500) }),
     });
     return response.json();
   },

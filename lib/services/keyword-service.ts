@@ -1,6 +1,7 @@
 "use client"
 
 import type { Keyword, KeywordResults, NewsItem } from "../types"
+import { PAKISTANI_NEWSPAPERS } from "../sources/newspapers"
 
 // Polyfill for uuid if needed
 const generateId = () => {
@@ -23,7 +24,12 @@ export const KeywordService = {
     if (!storage) return []
 
     const stored = storage.getItem("osint-keywords")
-    if (!stored) return []
+    if (!stored) {
+      // Initialize default keywords if none exist, include news channels
+      const defaultKeywords = KeywordService.getDefaultNewsChannels()
+      storage.setItem("osint-keywords", JSON.stringify(defaultKeywords))
+      return defaultKeywords
+    }
 
     try {
       return JSON.parse(stored)
@@ -33,7 +39,21 @@ export const KeywordService = {
     }
   },
 
-  addKeyword: (text: string): Keyword => {
+  getDefaultNewsChannels: (): Keyword[] => {
+    const now = new Date().toISOString()
+    return PAKISTANI_NEWSPAPERS.map((paper) => ({
+      id: `newspaper-${paper.id}`,
+      text: paper.name,
+      createdAt: now,
+      lastUpdated: now,
+      isNewsChannel: true,
+      country: paper.country,
+      language: paper.language,
+      category: paper.category,
+    }))
+  },
+
+  addKeyword: (text: string, isNewsChannel = false, details = {}): Keyword => {
     const storage = getLocalStorage()
     if (!storage) {
       throw new Error("Browser storage not available")
@@ -52,6 +72,8 @@ export const KeywordService = {
       text,
       createdAt: now,
       lastUpdated: now,
+      isNewsChannel,
+      ...details,
     }
 
     const updatedKeywords = [...keywords, newKeyword]
